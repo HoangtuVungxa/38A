@@ -430,6 +430,64 @@
             renderSearchTable(results);
         }
 
+        // 1. Escape HTML để ngăn XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;',
+                '/': '&#x2F;',
+                '`': '&#x60;',
+                '=': '&#x3D;'
+            };
+            return String(text).replace(/[&<>"'`=\/]/g, function(s) {
+                return map[s];
+            });
+        }
+
+        // 2. Validate URL an toàn
+        function isValidUrl(string) {
+            try {
+                const url = new URL(string);
+                // Chỉ cho phép HTTP và HTTPS
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // 3. Rút gọn URL dài
+        function truncateUrl(url, maxLength = 50) {
+            if (url.length <= maxLength) return url;
+            return url.substring(0, maxLength) + '...';
+        }
+
+        // 4. Tạo ID duy nhất cho tin nhắn (để dễ dàng thao tác sau này)
+        function generateMessageId() {
+            return 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // 5. Làm sạch nội dung tin nhắn
+        function sanitizeMessage(text) {
+            // Loại bỏ các thẻ HTML không mong muốn
+            const temp = document.createElement('div');
+            temp.textContent = text;
+            return temp.textContent;
+        }
+        
+        //Hạn chế tin nhắn dài
+        function limitMessages(maxMessages = 100) {
+            const messages = chatWindow.querySelectorAll('.chat-message');
+            if (messages.length > maxMessages) {
+                for (let i = 0; i < messages.length - maxMessages; i++) {
+                    messages[i].remove();
+                }
+            }
+        }
+
         // <!-- SCRIPT XỬ LÝ LƯU TRỮ VÀ XÓA TIN NHẮN SAU 30 PHÚT -->
         // 1. DÁN ĐOẠN FIREBASE CONFIG CỦA BẠN VÀO ĐÂY
         const firebaseConfig = {
@@ -462,22 +520,118 @@
                 // Kiểm tra xem tin nhắn đã tồn tại quá 30 phút chưa
                 if (currentTime - msg.timestamp > TIME_LIMIT_MS) {
                     db.ref('chat-lop38a/' + key).remove();
+                    console.log(`🗑️ Đã xóa tin nhắn cũ: ${key}`);
                 } else {
-                    // TÌM VÀ CHUYỂN ĐỔI ĐƯỜNG LINK THÀNH THẺ HTML CÓ THỂ CLICK
-                    // Dùng Regex tìm các cụm từ bắt đầu bằng http:// hoặc https://
-                    const urlRegex = /(https?:\/\/[^\s]+)/g;
-                    const formattedText = msg.text.replace(urlRegex, function(url) {
-                        return `<a href="${url}" target="_blank" style="color: #007bff; text-decoration: underline; word-break: break-all;">${url}</a>`;
+                    // BƯỚC 1: Làm sạch nội dung
+                    const cleanText = sanitizeMessage(msg.text);
+                    
+                    // BƯỚC 2: Escape HTML
+                    let formattedText = escapeHtml(cleanText);
+                    
+                    // BƯỚC 3: Tìm và chuyển đổi URL an toàn
+                    const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
+                    
+                    formattedText = formattedText.replace(urlRegex, function(url) {
+                        // Kiểm tra URL hợp lệ
+                        if (!isValidUrl(url)) {
+                            return url; // Giữ nguyên nếu không hợp lệ
+                        }
+                        
+                        // Escape URL an toàn
+                        const safeUrl = escapeHtml(url);
+                        const displayUrl = truncateUrl(safeUrl, 50);
+                        
+                        // Tạo thẻ <a> an toàn với đầy đủ thuộc tính bảo mật
+                        return `<a href="${safeUrl}" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    title="${escapeHtml(url)}"
+                                    style="color: #007bff; 
+                                        text-decoration: underline; 
+                                        word-break: break-all;
+                                        cursor: pointer;
+                                        transition: color 0.2s;"
+                                    onmouseover="this.style.color='#0056b3'"
+                                    onmouseout="this.style.color='#007bff'">${displayUrl}</a>`;
+                    });
+                    
+                    // BƯỚC 4: Xử lý xuống dòng (tùy chọn)
+                    formattedText = formattedText.replace(/\n/g, '<br>');
+                    
+                    // BƯỚC 5: Tạo ID cho tin nhắn
+                    const messageId = generateMessageId();
+                    
+                    // BƯỚC 6: Hiển thị tin nhắn với đầy đủ thông tin
+                    const timeString = new Date(msg.timestamp).toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: false // Dùng định dạng 24h
                     });
 
-                    // In ra màn hình
-                    const timeString = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    chatWindow.innerHTML += `
-                        <div style="background: white; padding: 8px 12px; border-radius: 15px; border: 1px solid #eee; align-self: flex-start; max-width: 80%;">
-                            <span style="font-size: 0.8em; color: #888;">${timeString}</span>
-                            <div style="margin-top: 4px; color: #333;">${formattedText}</div>
+                    // Tạo khung chat với các thuộc tính bổ sung
+                    const messageHtml = `
+                        <div id="${messageId}" 
+                            class="chat-message" 
+                            style="background: white; 
+                                    padding: 10px 14px; 
+                                    border-radius: 15px; 
+                                    border: 1px solid #eee; 
+                                    align-self: flex-start; 
+                                    max-width: 80%;
+                                    margin-bottom: 8px;
+                                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                                    transition: all 0.2s;
+                                    animation: fadeIn 0.3s ease-in;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <span style="font-size: 0.75em; color: #999;">
+                                    ${timeString}
+                                </span>
+                                <span style="font-size: 0.65em; color: #ccc;">
+                                    ID: ${messageId.substr(0, 8)}
+                                </span>
+                            </div>
+                            
+                            <div style="margin-top: 4px; color: #333; word-wrap: break-word; overflow-wrap: break-word;">
+                                ${formattedText}
+                            </div>
+                            
+                            ${msg.sender ? `<div style="margin-top: 6px; font-size: 0.7em; color: #aaa;">👤 ${escapeHtml(msg.sender)}</div>` : ''}
                         </div>
                     `;
+                    
+                    // Thêm CSS animation (có thể chuyển vào file CSS riêng)
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes fadeIn {
+                            from { opacity: 0; transform: translateY(-10px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                        .chat-message:hover {
+                            border-color: #007bff !important;
+                            box-shadow: 0 2px 8px rgba(0,123,255,0.1) !important;
+                        }
+                        .chat-message a {
+                            color: #007bff !important;
+                            text-decoration: underline !important;
+                        }
+                        .chat-message a:hover {
+                            color: #0056b3 !important;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    // Thêm vào khung chat
+                    chatWindow.innerHTML += messageHtml;
+                    
+                    // Tự động cuộn xuống tin nhắn mới nhất
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                    
+                    // Log để debug
+                    console.log(`✅ Đã hiển thị tin nhắn: ${messageId}`, {
+                        timestamp: new Date(msg.timestamp).toISOString(),
+                        content: cleanText.substring(0, 50) + (cleanText.length > 50 ? '...' : '')
+                    });
                 }
             });
 
