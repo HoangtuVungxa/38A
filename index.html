@@ -210,6 +210,9 @@
 
     </div>
 
+    <!-- CÁC THƯ VIỆN CỦA FIREBASE (Cần thiết để kết nối) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
     // 1. Dữ liệu gốc tổng hợp toàn bộ 84 học viên của 4 chuyên ngành (CN1-CN4)
     const defaultData = [
@@ -428,60 +431,65 @@
         }
 
         // <!-- SCRIPT XỬ LÝ LƯU TRỮ VÀ XÓA TIN NHẮN SAU 30 PHÚT -->
-        const TIME_LIMIT_MS = 30 * 60 * 1000; // 30 phút tính bằng mili-giây
+        // 1. DÁN ĐOẠN FIREBASE CONFIG CỦA BẠN VÀO ĐÂY
+        const firebaseConfig = {
+            apiKey: "AIzaSyALS-9E29szDvFGUtuNfI8qXY7DOfB02gE",
+            authDomain: "chat-lop38a.firebaseapp.com",
+            projectId: "chat-lop38a",
+            storageBucket: "chat-lop38a.firebasestorage.app",
+            messagingSenderId: "181134322002",
+            appId: "1:181134322002:web:db4d4f2c7e2e651fe0f28b"
+        };
 
-        // Hàm lấy danh sách tin nhắn và lọc bỏ những tin quá 30 phút
-        function getValidMessages() {
-            let messages = JSON.parse(localStorage.getItem('class38a_chat')) || [];
-            const currentTime = Date.now();
-            
-            // Chỉ giữ lại những tin nhắn có thời gian tồn tại nhỏ hơn 30 phút
-            const validMessages = messages.filter(msg => (currentTime - msg.timestamp) < TIME_LIMIT_MS);
-            
-            // Cập nhật lại vào bộ nhớ nếu có tin nhắn bị xóa
-            if (validMessages.length !== messages.length) {
-                localStorage.setItem('class38a_chat', JSON.stringify(validMessages));
-            }
-            
-            return validMessages;
-        }
+        // Khởi tạo Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        // Hàm hiển thị tin nhắn lên màn hình
-        function renderChat() {
+        const TIME_LIMIT_MS = 30 * 60 * 1000; // 30 phút
+
+        // 2. LẮNG NGHE TIN NHẮN THEO THỜI GIAN THỰC
+        // Mỗi khi có người gửi tin, Firebase sẽ tự động chạy hàm này trên mọi máy tính
+        db.ref('chat_lop_38a').on('value', (snapshot) => {
             const chatWindow = document.getElementById('chat-window');
-            const messages = getValidMessages();
-            
             chatWindow.innerHTML = ''; // Xóa sạch khung chat hiện tại
-            
-            messages.forEach(msg => {
-                const timeString = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                chatWindow.innerHTML += `
-                    <div style="background: white; padding: 8px 12px; border-radius: 15px; border: 1px solid #eee; align-self: flex-start; max-width: 80%;">
-                        <span style="font-size: 0.8em; color: #888;">${timeString}</span>
-                        <div style="margin-top: 4px; color: #333;">${msg.text}</div>
-                    </div>
-                `;
+            const currentTime = Date.now();
+
+            snapshot.forEach((childSnapshot) => {
+                const msg = childSnapshot.val();
+                const key = childSnapshot.key;
+
+                // Kiểm tra xem tin nhắn đã tồn tại quá 30 phút chưa
+                if (currentTime - msg.timestamp > TIME_LIMIT_MS) {
+                    // Nếu quá 30 phút, tự động xóa nó khỏi cơ sở dữ liệu trên Firebase
+                    db.ref('chat_lop_38a/' + key).remove();
+                } else {
+                    // Nếu chưa quá 30 phút, in ra màn hình
+                    const timeString = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    chatWindow.innerHTML += `
+                        <div style="background: white; padding: 8px 12px; border-radius: 15px; border: 1px solid #eee; align-self: flex-start; max-width: 80%;">
+                            <span style="font-size: 0.8em; color: #888;">${timeString}</span>
+                            <div style="margin-top: 4px; color: #333;">${msg.text}</div>
+                        </div>
+                    `;
+                }
             });
 
-            // Cuộn xuống tin nhắn mới nhất
+            // Tự động cuộn xuống tin nhắn mới nhất
             chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
+        });
 
-        // Hàm gửi tin nhắn
+        // 3. HÀM GỬI TIN NHẮN LÊN FIREBASE
         function sendMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             
             if (text !== '') {
-                const messages = getValidMessages();
-                messages.push({
+                // Thay vì lưu vào LocalStorage, chúng ta đẩy lên Firebase
+                db.ref('chat_lop_38a').push({
                     text: text,
                     timestamp: Date.now()
                 });
-                
-                localStorage.setItem('class38a_chat', JSON.stringify(messages));
-                input.value = ''; // Xóa ô nhập liệu
-                renderChat(); // Cập nhật lại giao diện
+                input.value = ''; // Xóa trắng ô nhập liệu sau khi gửi
             }
         }
 
@@ -492,11 +500,11 @@
             }
         });
 
-        // Khởi chạy hiển thị lần đầu
-        renderChat();
-
-        // Tự động kiểm tra và xóa tin nhắn cũ mỗi 1 phút (60000 ms)
-        setInterval(renderChat, 60000);
+        // Tự động tải lại khung chat mỗi 1 phút để kiểm tra và dọn dẹp các tin nhắn hết hạn (kể cả khi không ai chat)
+        setInterval(() => {
+            // Việc chỉ gọi lại ref sẽ kích hoạt việc quét và xóa các tin nhắn cũ
+            db.ref('chat_lop_38a').once('value');
+        }, 60000);
             
     </script>
 </body>
