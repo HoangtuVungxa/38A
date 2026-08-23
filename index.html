@@ -461,7 +461,7 @@
                 // Kiểm tra xem tin nhắn đã tồn tại quá 30 phút chưa
                 if (currentTime - msg.timestamp > TIME_LIMIT_MS) {
                     // Nếu quá 30 phút, tự động xóa nó khỏi cơ sở dữ liệu trên Firebase
-                    db.ref('chat_lop_38a/' + key).remove();
+                    db.ref('Chat_Lop38A/' + key).remove();
                 } else {
                     // Nếu chưa quá 30 phút, in ra màn hình
                     const timeString = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -485,7 +485,7 @@
             
             if (text !== '') {
                 // Thay vì lưu vào LocalStorage, chúng ta đẩy lên Firebase
-                db.ref('chat_lop_38a').push({
+                db.ref('Chat_Lop38A').push({
                     text: text,
                     timestamp: Date.now()
                 });
