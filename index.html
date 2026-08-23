@@ -461,15 +461,21 @@
 
                 // Kiểm tra xem tin nhắn đã tồn tại quá 30 phút chưa
                 if (currentTime - msg.timestamp > TIME_LIMIT_MS) {
-                    // Nếu quá 30 phút, tự động xóa nó khỏi cơ sở dữ liệu trên Firebase
                     db.ref('chat-lop38a/' + key).remove();
                 } else {
-                    // Nếu chưa quá 30 phút, in ra màn hình
+                    // TÌM VÀ CHUYỂN ĐỔI ĐƯỜNG LINK THÀNH THẺ HTML CÓ THỂ CLICK
+                    // Dùng Regex tìm các cụm từ bắt đầu bằng http:// hoặc https://
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+                    const formattedText = msg.text.replace(urlRegex, function(url) {
+                        return `<a href="${url}" target="_blank" style="color: #007bff; text-decoration: underline; word-break: break-all;">${url}</a>`;
+                    });
+
+                    // In ra màn hình
                     const timeString = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     chatWindow.innerHTML += `
                         <div style="background: white; padding: 8px 12px; border-radius: 15px; border: 1px solid #eee; align-self: flex-start; max-width: 80%;">
                             <span style="font-size: 0.8em; color: #888;">${timeString}</span>
-                            <div style="margin-top: 4px; color: #333;">${msg.text}</div>
+                            <div style="margin-top: 4px; color: #333;">${formattedText}</div>
                         </div>
                     `;
                 }
