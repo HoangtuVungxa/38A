@@ -126,6 +126,21 @@
                     <p>- Tối thứ 3 (25/8) sinh hoạt nhập học, 18h00 lên xe.</p>
                 </div>
             </div>
+            <!-- KHUNG CHAT TRỰC TUYẾN -->
+            <div style="margin-top: 30px; background: #ffffff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0; color: #333;">💬 Thảo luận nhanh (Tin nhắn tự xóa sau 30 phút)</h3>
+                
+                <!-- Khu vực hiển thị tin nhắn -->
+                <div id="chat-window" style="height: 200px; overflow-y: auto; background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; border: 1px solid #ccc; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Tin nhắn sẽ xuất hiện ở đây -->
+                </div>
+
+                <!-- Khu vực nhập tin nhắn -->
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chat-input" placeholder="Nhập tin nhắn của bạn vào đây..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none;">
+                    <button onclick="sendMessage()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Gửi</button>
+                </div>
+            </div>
         </div>
 
 
@@ -411,6 +426,77 @@
             );
             renderSearchTable(results);
         }
+
+        // <!-- SCRIPT XỬ LÝ LƯU TRỮ VÀ XÓA TIN NHẮN SAU 30 PHÚT -->
+        const TIME_LIMIT_MS = 30 * 60 * 1000; // 30 phút tính bằng mili-giây
+
+        // Hàm lấy danh sách tin nhắn và lọc bỏ những tin quá 30 phút
+        function getValidMessages() {
+            let messages = JSON.parse(localStorage.getItem('class38a_chat')) || [];
+            const currentTime = Date.now();
+            
+            // Chỉ giữ lại những tin nhắn có thời gian tồn tại nhỏ hơn 30 phút
+            const validMessages = messages.filter(msg => (currentTime - msg.timestamp) < TIME_LIMIT_MS);
+            
+            // Cập nhật lại vào bộ nhớ nếu có tin nhắn bị xóa
+            if (validMessages.length !== messages.length) {
+                localStorage.setItem('class38a_chat', JSON.stringify(validMessages));
+            }
+            
+            return validMessages;
+        }
+
+        // Hàm hiển thị tin nhắn lên màn hình
+        function renderChat() {
+            const chatWindow = document.getElementById('chat-window');
+            const messages = getValidMessages();
+            
+            chatWindow.innerHTML = ''; // Xóa sạch khung chat hiện tại
+            
+            messages.forEach(msg => {
+                const timeString = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                chatWindow.innerHTML += `
+                    <div style="background: white; padding: 8px 12px; border-radius: 15px; border: 1px solid #eee; align-self: flex-start; max-width: 80%;">
+                        <span style="font-size: 0.8em; color: #888;">${timeString}</span>
+                        <div style="margin-top: 4px; color: #333;">${msg.text}</div>
+                    </div>
+                `;
+            });
+
+            // Cuộn xuống tin nhắn mới nhất
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Hàm gửi tin nhắn
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            
+            if (text !== '') {
+                const messages = getValidMessages();
+                messages.push({
+                    text: text,
+                    timestamp: Date.now()
+                });
+                
+                localStorage.setItem('class38a_chat', JSON.stringify(messages));
+                input.value = ''; // Xóa ô nhập liệu
+                renderChat(); // Cập nhật lại giao diện
+            }
+        }
+
+        // Lắng nghe sự kiện nhấn phím Enter để gửi
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Khởi chạy hiển thị lần đầu
+        renderChat();
+
+        // Tự động kiểm tra và xóa tin nhắn cũ mỗi 1 phút (60000 ms)
+        setInterval(renderChat, 60000);
             
     </script>
 </body>
