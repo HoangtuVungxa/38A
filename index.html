@@ -435,8 +435,9 @@
         const firebaseConfig = {
             apiKey: "AIzaSyALS-9E29szDvFGUtuNfI8qXY7DOfB02gE",
             authDomain: "chat-lop38a.firebaseapp.com",
+            databaseURL: "[https://chat-lop38a-default-rtdb.asia-southeast1.firebasedatabase.app](https://chat-lop38a-default-rtdb.asia-southeast1.firebasedatabase.app)",
             projectId: "chat-lop38a",
-            storageBucket: "chat-lop38a.firebasestorage.app",
+            storageBucket: "chat-lop38a.firebasestorage.appN",
             messagingSenderId: "181134322002",
             appId: "1:181134322002:web:db4d4f2c7e2e651fe0f28b"
         };
@@ -449,7 +450,7 @@
 
         // 2. LẮNG NGHE TIN NHẮN THEO THỜI GIAN THỰC
         // Mỗi khi có người gửi tin, Firebase sẽ tự động chạy hàm này trên mọi máy tính
-        db.ref('Chat_Lop38A').on('value', (snapshot) => {
+        db.ref('chat-lop38a').on('value', (snapshot) => {
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML = ''; // Xóa sạch khung chat hiện tại
             const currentTime = Date.now();
@@ -461,7 +462,7 @@
                 // Kiểm tra xem tin nhắn đã tồn tại quá 30 phút chưa
                 if (currentTime - msg.timestamp > TIME_LIMIT_MS) {
                     // Nếu quá 30 phút, tự động xóa nó khỏi cơ sở dữ liệu trên Firebase
-                    db.ref('Chat_Lop38A/' + key).remove();
+                    db.ref('chat-lop38a/' + key).remove();
                 } else {
                     // Nếu chưa quá 30 phút, in ra màn hình
                     const timeString = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -485,7 +486,7 @@
             
             if (text !== '') {
                 // Thay vì lưu vào LocalStorage, chúng ta đẩy lên Firebase
-                db.ref('Chat_Lop38A').push({
+                db.ref('chat-lop38a').push({
                     text: text,
                     timestamp: Date.now()
                 });
@@ -503,7 +504,7 @@
         // Tự động tải lại khung chat mỗi 1 phút để kiểm tra và dọn dẹp các tin nhắn hết hạn (kể cả khi không ai chat)
         setInterval(() => {
             // Việc chỉ gọi lại ref sẽ kích hoạt việc quét và xóa các tin nhắn cũ
-            db.ref('Chat_Lop38A').once('value');
+            db.ref('chat-lop38a').once('value');
         }, 60000);
             
     </script>
