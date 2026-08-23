@@ -31,6 +31,63 @@
         .admin-panel { background-color: #fff3cd; padding: 15px 20px; border-left: 5px solid #ffc107; margin-bottom: 20px; border-radius: 5px; }
         .admin-panel h4 { margin-top: 0; color: #856404; }
         .task-list li { margin-bottom: 10px; line-height: 1.6; }
+
+        /* --- CSS Responsive cho Điện thoại --- */
+        @media screen and (max-width: 768px) {
+            /* Đổi bố cục trang từ ngang sang dọc */
+            body {
+                display: block; 
+            }
+            
+            /* Chỉnh lại thanh Menu (Sidebar) */
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding-bottom: 10px;
+            }
+            
+            .sidebar h2 {
+                width: 100%;
+                margin: 10px 0;
+                font-size: 18px;
+            }
+            
+            .sidebar a {
+                padding: 8px 12px;
+                font-size: 14px;
+                flex: 1 1 auto; /* Các nút menu sẽ tự xếp gọn */
+                text-align: center;
+                border-left: none;
+                border-bottom: 2px solid transparent;
+            }
+            
+            .sidebar a:hover, .sidebar a.active-link {
+                border-left: none;
+                border-bottom: 2px solid #3498db;
+            }
+            
+            /* Chỉnh lại phần Nội dung (Content) */
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+
+            /* Ảnh banner toàn màn hình trên điện thoại */
+            #dashboard img {
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+
+            /* Các khối thông tin Bảng tin sẽ tự động xếp dọc xuống thay vì nằm ngang */
+            .dashboard-boxes {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
@@ -53,7 +110,7 @@
         <div id="dashboard" class="section active">
             <h2 style="display: flex; justify-content: center; align-items: center;"><img src="38A_BANNER_phu.png" style="width: 50%; min-width: 50%;"></h2>
             <h2>Bảng Tin - Lớp Cao Học 38A</h2>
-            <div style="display: flex; gap: 20px; margin-top: 20px;">
+            <div class="dashboard-boxes" style="display: flex; gap: 20px; margin-top: 20px;">
                 <div style="flex: 1; background: #e8f4f8; padding: 20px; border-radius: 8px;">
                     <h3>Sĩ số các chuyên ngành</h3>
                     <p><b>CN1:</b> 21 đ/c</p>
@@ -76,10 +133,12 @@
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Nhập tên, lớp CN, số phòng hoặc số ĐT để tìm kiếm...">
             </div>
-            <table>
-                <thead><tr><th>Họ và tên</th><th>Chuyên ngành</th><th>Phòng ở</th><th>Số điện thoại</th><th>Chức vụ</th></tr></thead>
-                <tbody id="searchResultBody"></tbody>
-            </table>
+            <div style="overflow-x: auto; width: 100%;"></div>
+                <table>
+                    <thead><tr><th>Họ và tên</th><th>Chuyên ngành</th><th>Phòng ở</th><th>Số điện thoại</th><th>Chức vụ</th></tr></thead>
+                    <tbody id="searchResultBody"></tbody>
+                </table>
+            </div>    
         </div>        
 
         <!-- 4. Danh sách Tranh thủ -->
