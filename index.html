@@ -449,7 +449,7 @@
 
         // 2. LẮNG NGHE TIN NHẮN THEO THỜI GIAN THỰC
         // Mỗi khi có người gửi tin, Firebase sẽ tự động chạy hàm này trên mọi máy tính
-        db.ref('chat_lop38a').on('value', (snapshot) => {
+        db.ref('Chat_Lop38A').on('value', (snapshot) => {
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML = ''; // Xóa sạch khung chat hiện tại
             const currentTime = Date.now();
