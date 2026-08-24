@@ -101,6 +101,7 @@
         <!-- <a class="nav-link" onclick="showSection('trucban', this)">🛡️ Lịch Gác & Trực ban</a> -->
         <a class="nav-link" onclick="showSection('tkb', this)">📅 Thời khóa biểu</a>
         <a class="nav-link" onclick="showSection('nhiemvu', this)">⚙️ Nhiệm vụ & KVVS</a>
+        <a class="nav-link" onclick="showSection('link', this)">⬇️ Link tài liệu</a>
     </div>
 
     <!-- Main Content -->
@@ -128,7 +129,7 @@
             </div>
             <!-- KHUNG CHAT TRỰC TUYẾN -->
             <div style="margin-top: 30px; background: #ffffff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <h3 style="margin-top: 0; color: #333;">💬 Thảo luận nhanh (Tin nhắn tự xóa sau 30 phút)</h3>
+                <h3 style="margin-top: 0; color: #333;">💬 Thảo luận nhanh (Tin nhắn tự xóa sau 90 phút)</h3>
                 
                 <!-- Khu vực hiển thị tin nhắn -->
                 <div id="chat-window" style="height: 200px; overflow-y: auto; background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; border: 1px solid #ccc; display: flex; flex-direction: column; gap: 8px;">
@@ -160,10 +161,8 @@
 
         <!-- 4. Danh sách Tranh thủ -->
         <div id="tranhthu" class="section">
-            <h2>Danh sách Tranh thủ cuối tuần</h2>            
-            <!-- Đổi id thành class="zoom-container" -->
+            <h2>Danh sách Tranh thủ cuối tuần</h2>  
             <div class="zoom-container" style="margin-top: 20px; overflow: auto; max-height: 600px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 2px 10px rgba(0,0,0,0.05); background: #f8f9fa;">                
-                <!-- Đổi id thành class="zoom-image" -->
                 <img class="zoom-image" src="CH38A_DANG_KY_TRANH_THU_18.8.26.jpg" alt="Danh sách tranh thủ" draggable="false" style="width: 100%; min-width: 100%; display: block; transition: width 0.15s ease-out;">
             </div>
         </div>
@@ -179,9 +178,7 @@
         <!-- 6. Thời khóa biểu -->
         <div id="tkb" class="section">
             <h2>Thời khóa biểu Học kỳ 1</h2>
-            <!-- Đổi id thành class="zoom-container" -->
             <div class="zoom-container" style="margin-top: 20px; overflow: auto; max-height: 600px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 2px 10px rgba(0,0,0,0.05); background: #f8f9fa;">                
-                <!-- Đổi id thành class="zoom-image" -->
                 <img class="zoom-image" src="TKB_38A_HK1.jpg" alt="Thoi khoa bieu HK1" draggable="false" style="width: 100%; min-width: 100%; display: block; transition: width 0.15s ease-out;">
             </div>
         </div>
@@ -206,6 +203,23 @@
                 <img class="zoom-image" src="KVVS.jpg" alt="Phan cong khu vuc ve sinh" draggable="false" style="width: 100%; min-width: 100%; display: block; transition: width 0.15s ease-out;">
             </div>    -->
                   
+        </div>
+
+        <!-- 8. KHU VỰC TẢI TÀI LIỆU BÀI GIẢNG -->
+        <div id="link" class="section"></div>
+            <h2>📚 Kho Tài Liệu & Bài Giảng</h2>
+            <div style="margin-top: 20px; background: #eef2f5; padding: 20px; border-radius: 8px; border-left: 5px solid #0056b3;">
+                <h3 style="margin-top: 0; color: #0056b3;">📁 MÔN TRIẾT HỌC</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="https://drive.google.com/drive/folders/19MkIHxxQPLZf9J3yZnSJP_5UCWrOwn7x?usp=sharing" target="_blank" style="display: inline-block; padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; width: fit-content;"></a>
+                </div>
+                <div style="margin-top: 20px; background: #eef2f5; padding: 20px; border-radius: 8px; border-left: 5px solid #0056b3;">
+                <h3 style="margin-top: 0; color: #0056b3;">📁 MÔN CẤU TRÚC DỮ LIỆU VÀ GIẢI THUẬT NÂNG CAO</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="https://drive.google.com/drive/folders/1WxvCpkiWqZcIlDfqVqbOHw05DU0jpLHl?usp=sharing" target="_blank" style="display: inline-block; padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; width: fit-content;"></a>
+                </div>
+            </div>
+            </div>
         </div>
 
     </div>
@@ -488,7 +502,7 @@
             }
         }
 
-        // <!-- SCRIPT XỬ LÝ LƯU TRỮ VÀ XÓA TIN NHẮN SAU 30 PHÚT -->
+        // <!-- SCRIPT XỬ LÝ LƯU TRỮ VÀ XÓA TIN NHẮN SAU 90 PHÚT -->
         // 1. DÁN ĐOẠN FIREBASE CONFIG CỦA BẠN VÀO ĐÂY
         const firebaseConfig = {
             apiKey: "AIzaSyALS-9E29szDvFGUtuNfI8qXY7DOfB02gE",
@@ -504,7 +518,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const TIME_LIMIT_MS = 30 * 60 * 1000; // 30 phút
+        const TIME_LIMIT_MS = 90 * 60 * 1000; // 90 phút
 
         // 2. LẮNG NGHE TIN NHẮN THEO THỜI GIAN THỰC
         // Mỗi khi có người gửi tin, Firebase sẽ tự động chạy hàm này trên mọi máy tính
