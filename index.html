@@ -36,90 +36,37 @@
         /* --- CSS Responsive cho Điện thoại --- */
         @media screen and (max-width: 768px) {
             /* Đổi bố cục trang từ ngang sang dọc */
-            body {
-                display: block; 
-            }
+            body { display: block; }
             
             /* Chỉnh lại thanh Menu (Sidebar) */
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                padding-bottom: 10px;
-            }
+            .sidebar { width: 100%; height: auto; position: relative; display: flex; flex-wrap: wrap; justify-content: center; padding-bottom: 10px;}
             
-            .sidebar h2 {
-                width: 100%;
-                margin: 10px 0;
-                font-size: 18px;
-            }
+            .sidebar h2 { width: 100%; margin: 10px 0; font-size: 18px;}
             
-            .sidebar a {
-                padding: 8px 12px;
-                font-size: 14px;
-                flex: 1 1 auto; /* Các nút menu sẽ tự xếp gọn */
-                text-align: center;
-                border-left: none;
-                border-bottom: 2px solid transparent;
-            }
+            .sidebar a { padding: 8px 12px; font-size: 14px; flex: 1 1 auto; text-align: center; border-left: none; border-bottom: 2px solid transparent;}
             
-            .sidebar a:hover, .sidebar a.active-link {
-                border-left: none;
-                border-bottom: 2px solid #3498db;
-            }
+            .sidebar a:hover, .sidebar a.active-link { border-left: none; border-bottom: 2px solid #3498db;}
             
             /* Chỉnh lại phần Nội dung (Content) */
-            .content {
-                margin-left: 0;
-                width: 100%;
-                padding: 15px;
-            }
+            .content { margin-left: 0;  width: 100%; padding: 15px;}
 
             /* Ảnh banner toàn màn hình trên điện thoại */
-            #dashboard img {
-                width: 100% !important;
-                min-width: 100% !important;
-            }
+            #dashboard img { width: 100% !important; min-width: 100% !important;}
 
             /* Các khối thông tin Bảng tin sẽ tự động xếp dọc xuống thay vì nằm ngang */
-            .dashboard-boxes {
-                flex-direction: column;
-            }        
+            .dashboard-boxes { flex-direction: column;}        
         }
-        #link {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
+        #link { width: 100%; max-width: 800px;  margin: 0 auto;  box-sizing: border-box; }
 
-        #link h2 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+        #link h2 { text-align: center; margin-bottom: 25px; }
 
-        .document-box {
-            margin-top: 15px;
-            padding: 15px 20px;
-            background: #eef2f5;
-            border-radius: 5px;
-        }
+        .document-box { margin-top: 15px; padding: 15px 20px; background: #eef2f5; border-radius: 5px; }
 
-        .document-box h3 {
-            margin: 0;
-        }
+        .document-box h3 { margin: 0; }
 
-        .document-box a {
-            color: #0056b3;
-            text-decoration: none;
-        }
+        .document-box a { color: #0056b3; text-decoration: none;  }
 
-        .document-box a:hover {
-            text-decoration: underline;
-        }
+        .document-box a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
