@@ -36,36 +36,20 @@
         /* --- CSS Responsive cho Điện thoại --- */
         @media screen and (max-width: 768px) {
             /* Đổi bố cục trang từ ngang sang dọc */
-            body { display: block; }
-            
-            /* Chỉnh lại thanh Menu (Sidebar) */
-            .sidebar { width: 100%; height: auto; position: relative; display: flex; flex-wrap: wrap; justify-content: center; padding-bottom: 10px;}
-            
-            .sidebar h2 { width: 100%; margin: 10px 0; font-size: 18px;}
-            
-            .sidebar a { padding: 8px 12px; font-size: 14px; flex: 1 1 auto; text-align: center; border-left: none; border-bottom: 2px solid transparent;}
-            
-            .sidebar a:hover, .sidebar a.active-link { border-left: none; border-bottom: 2px solid #3498db;}
-            
-            /* Chỉnh lại phần Nội dung (Content) */
+            body { display: block; }  
+            .sidebar { width: 100%; height: auto; position: relative; display: flex; flex-wrap: wrap; justify-content: center; padding-bottom: 10px;}            
+            .sidebar h2 { width: 100%; margin: 10px 0; font-size: 18px;}            
+            .sidebar a { padding: 8px 12px; font-size: 14px; flex: 1 1 auto; text-align: center; border-left: none; border-bottom: 2px solid transparent;}            
+            .sidebar a:hover, .sidebar a.active-link { border-left: none; border-bottom: 2px solid #3498db;} 
             .content { margin-left: 0;  width: 100%; padding: 15px;}
-
-            /* Ảnh banner toàn màn hình trên điện thoại */
             #dashboard img { width: 100% !important; min-width: 100% !important;}
-
-            /* Các khối thông tin Bảng tin sẽ tự động xếp dọc xuống thay vì nằm ngang */
             .dashboard-boxes { flex-direction: column;}        
         }
         #link { width: 100%; max-width: 800px;  margin: 0 auto;  box-sizing: border-box; }
-
         #link h2 { text-align: center; margin-bottom: 25px; }
-
         .document-box { margin-top: 15px; padding: 15px 20px; background: #eef2f5; border-radius: 5px; }
-
         .document-box h3 { margin: 0; }
-
         .document-box a { color: #0056b3; text-decoration: none;  }
-
         .document-box a:hover { text-decoration: underline; }
     </style>
 </head>
@@ -115,19 +99,17 @@
                     <p>7. Canh xương khoai.</p>    
                     <p>8. Cơm tẻ.</p>    
                     <p>9. Tráng miệng: Dưa hấu.</p>    
-                    <p>10. Nước ngọt lon.</p>    
-
-                    
+                    <p>10. Nước ngọt lon.</p>                      
                 </div>
                 <!-- TAB ĐỌC PDF (Dùng Google Drive) -->
                 <div style="flex: 1; background: #8adcbc; padding: 20px; border-radius: 8px;">
-                    <h2> ĐIỂM THI NGOẠI NGỮ QUY ĐỔI </h2>
+                    <h3> ĐIỂM THI NGOẠI NGỮ QUY ĐỔI </h3>
                     <div style="width: 100%; height: 75vh; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;"> 
                         <iframe src="https://drive.google.com/file/d/1xzAA8orkilw0ey0pLr29c5WdsE7vfIhA/preview" width="100%" height="100%" style="border: none;"></iframe>                        
                     </div>                    
                 </div>
                 <div style="flex: 1; background: #b196e3; padding: 20px; border-radius: 8px;">                    
-                    <h2> TÍNH GIẢM TRỪ GIA CẢNH </h2>
+                    <h3> TÍNH GIẢM TRỪ GIA CẢNH </h3>
                     <div style="width: 100%; height: 75vh; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;"> 
                         <iframe src="https://drive.google.com/file/d/13Y9wDkXLEZy1YLBnpsZ9wMuaoGmLNf0P/preview" width="100%" height="100%" style="border: none;"></iframe>                        
                     </div>
