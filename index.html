@@ -121,7 +121,6 @@
                 
                 <!-- Khu vực hiển thị tin nhắn -->
                 <div id="chat-window" style="height: 200px; overflow-y: auto; background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; border: 1px solid #ccc; display: flex; flex-direction: column; gap: 8px;">
-                    <!-- Tin nhắn sẽ xuất hiện ở đây -->
                 </div>
 
                 <!-- Khu vực nhập tin nhắn -->
@@ -236,7 +235,7 @@
 
     </div>
 
-    <!-- CÁC THƯ VIỆN CỦA FIREBASE (Cần thiết để kết nối) -->
+    <!-- CÁC THƯ VIỆN CỦA FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
@@ -428,7 +427,7 @@
             document.getElementById('searchInput').addEventListener('input', searchStudent);
         }
 
-        // --- HÀM RENDER CƠ BẢN ---
+        // --- HÀM RENDER  ---
         function showSection(id, element) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -515,7 +514,7 @@
         }
 
         // <!-- SCRIPT XỬ LÝ LƯU TRỮ VÀ XÓA TIN NHẮN SAU 90 PHÚT -->
-        // 1. DÁN ĐOẠN FIREBASE CONFIG CỦA BẠN VÀO ĐÂY
+        // 1. FIREBASE CONFIG 
         const firebaseConfig = {
             apiKey: "AIzaSyALS-9E29szDvFGUtuNfI8qXY7DOfB02gE",
             authDomain: "chat-lop38a.firebaseapp.com",
@@ -543,18 +542,18 @@
                 const msg = childSnapshot.val();
                 const key = childSnapshot.key;
 
-                // Kiểm tra xem tin nhắn đã tồn tại quá 30 phút chưa
+                // Kiểm tra xem tin nhắn đã tồn tại quá 90 phút chưa
                 if (currentTime - msg.timestamp > TIME_LIMIT_MS) {
                     db.ref('chat-lop38a/' + key).remove();
                     console.log(`🗑️ Đã xóa tin nhắn cũ: ${key}`);
                 } else {
-                    // BƯỚC 1: Làm sạch nội dung
+                    // 1: Làm sạch nội dung
                     const cleanText = sanitizeMessage(msg.text);
                     
-                    // BƯỚC 2: Escape HTML
+                    // 2: Escape HTML
                     let formattedText = escapeHtml(cleanText);
                     
-                    // BƯỚC 3: Tìm và chuyển đổi URL an toàn
+                    // 3: Tìm và chuyển đổi URL an toàn
                     const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
                     
                     formattedText = formattedText.replace(urlRegex, function(url) {
@@ -581,13 +580,13 @@
                                     onmouseout="this.style.color='#007bff'">${displayUrl}</a>`;
                     });
                     
-                    // BƯỚC 4: Xử lý xuống dòng (tùy chọn)
+                    // 4: Xử lý xuống dòng (tùy chọn)
                     formattedText = formattedText.replace(/\n/g, '<br>');
                     
-                    // BƯỚC 5: Tạo ID cho tin nhắn
+                    // 5: Tạo ID cho tin nhắn
                     const messageId = generateMessageId();
                     
-                    // BƯỚC 6: Hiển thị tin nhắn với đầy đủ thông tin
+                    // 6: Hiển thị tin nhắn với đầy đủ thông tin
                     const timeString = new Date(msg.timestamp).toLocaleTimeString([], { 
                         hour: '2-digit', 
                         minute: '2-digit',
@@ -626,7 +625,7 @@
                         </div>
                     `;
                     
-                    // Thêm CSS animation (có thể chuyển vào file CSS riêng)
+                    // Thêm CSS animation 
                     const style = document.createElement('style');
                     style.textContent = `
                         @keyframes fadeIn {
@@ -671,7 +670,7 @@
             const text = input.value.trim();
             
             if (text !== '') {
-                // Thay vì lưu vào LocalStorage, chúng ta đẩy lên Firebase
+                // đẩy lên Firebase
                 db.ref('chat-lop38a').push({
                     text: text,
                     timestamp: Date.now()
@@ -688,8 +687,7 @@
         });
 
         // Tự động tải lại khung chat mỗi 1 phút để kiểm tra và dọn dẹp các tin nhắn hết hạn (kể cả khi không ai chat)
-        setInterval(() => {
-            // Việc chỉ gọi lại ref sẽ kích hoạt việc quét và xóa các tin nhắn cũ
+        setInterval(() => {            
             db.ref('chat-lop38a').once('value');
         }, 60000);
             
